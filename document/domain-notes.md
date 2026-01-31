@@ -22,7 +22,7 @@ Entity + field:
         - id: mã project
         - name: tên project
         - description: mô tả project
-        - createAt: thời gian tạo
+        - createdAt: thời gian tạo
         - createBy: mã của MANAGER tạo Project (FK)
     Task:
         - id: mã Task
