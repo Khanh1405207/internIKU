@@ -13,6 +13,7 @@ public class Task {
     private String title;
     private String description;
     private TaskStatus taskStatus;
+    private Instant createdAt;
     private Instant deadline;
     private Project project;
     private User assignee;
@@ -33,6 +34,7 @@ public class Task {
         this.title = title;
         this.description = description;
         this.taskStatus = TaskStatus.TODO;
+        this.createdAt= Instant.now();
         this.deadline = deadline;
         this.project = project;
     }

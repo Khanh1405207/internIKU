@@ -16,7 +16,7 @@ Entity + field:
         - name: tên user
         - emai: unique
         - password: mật khẩu đăng nhập
-        - createAt: thời gian tạo
+        - createdAt: thời gian tạo
         - status: trạng thái user
     Project:
         - id: mã project
@@ -29,6 +29,7 @@ Entity + field:
         - title: tên Task
         - description: mô tả Task
         - taskStatus: trạng thái hiện tại của Task
+        - createdAt: thời gian tạo Task
         - deadline: hạn hoàn thành của Task
         - projectId: mã của project chứa Task (FK)
         - assigneeId: mã của User nhận công việc (FK)

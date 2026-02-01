@@ -37,9 +37,9 @@ public class User {
     }
 
     public void deActivate(){
-        if (status == UserStatus.DISABLED){
-            throw new IllegalStateException("User already disabled");
+        if (status == UserStatus.INACTIVE){
+            throw new IllegalStateException("User already inactive");
         }
-        this.status = UserStatus.DISABLED;
+        this.status = UserStatus.INACTIVE;
     }
 }
