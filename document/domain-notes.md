@@ -12,16 +12,16 @@ Thành phần:
     Role có 2: USER,MANAGER
 Entity + field:
     User :
-        - id: mã user
-        - name: tên user
+        - id: mã userEntity
+        - name: tên userEntity
         - emai: unique
         - password: mật khẩu đăng nhập
         - createdAt: thời gian tạo
-        - status: trạng thái user
+        - status: trạng thái userEntity
     Project:
-        - id: mã project
-        - name: tên project
-        - description: mô tả project
+        - id: mã projectEntity
+        - name: tên projectEntity
+        - description: mô tả projectEntity
         - createdAt: thời gian tạo
         - createBy: mã của MANAGER tạo Project (FK)
     Task:
@@ -31,7 +31,7 @@ Entity + field:
         - taskStatus: trạng thái hiện tại của Task
         - createdAt: thời gian tạo Task
         - deadline: hạn hoàn thành của Task
-        - projectId: mã của project chứa Task (FK)
+        - projectId: mã của projectEntity chứa Task (FK)
         - assigneeId: mã của User nhận công việc (FK)
     Role:
         - id: mã Role
@@ -46,7 +46,7 @@ Enum:
 Mô tả nghiệp vụ:
     - 1 User có thể tham gia nhiều Project
     - 1 User có thể có nhiều vai trò
-    - Chỉ MANAGER mới được tạo project
+    - Chỉ MANAGER mới được tạo projectEntity
     - 1 Project có nhiều Task
     - 1 Task thuộc 1 Project
     - 1 Task có thể được gán cho 1 User

@@ -1,4 +1,4 @@
-package com.example.taskmanagement.model;
+package com.example.taskmanagement.entity;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -7,14 +7,14 @@ import java.time.Instant;
 
 @Getter
 @Setter
-public class Project {
+public class ProjectEntity {
     private Long id;
     private String name;
     private String description;
     private Instant createdAt;
-    private User createdBy;
+    private UserEntity createdBy;
 
-    public Project(String name, String description, User createdBy) {
+    public ProjectEntity(String name, String description, UserEntity createdBy) {
         if (name == null || name.isBlank()){
             throw new IllegalArgumentException("Project name cannot be blank");
         }

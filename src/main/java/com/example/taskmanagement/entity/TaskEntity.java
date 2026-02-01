@@ -1,6 +1,6 @@
-package com.example.taskmanagement.model;
+package com.example.taskmanagement.entity;
 
-import com.example.taskmanagement.model.Enum.TaskStatus;
+import com.example.taskmanagement.entity.Enum.TaskStatus;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -8,17 +8,17 @@ import java.time.Instant;
 
 @Getter
 @Setter
-public class Task {
+public class TaskEntity {
     private Long id;
     private String title;
     private String description;
     private TaskStatus taskStatus;
     private Instant createdAt;
     private Instant deadline;
-    private Project project;
-    private User assignee;
+    private ProjectEntity projectEntity;
+    private UserEntity assignee;
 
-    public Task(String title, String description, Instant deadline, Project project) {
+    public TaskEntity(String title, String description, Instant deadline, ProjectEntity projectEntity) {
         if (title == null|| title.isBlank()){
             throw new IllegalArgumentException("Title cannot be blank");
         }
@@ -28,7 +28,7 @@ public class Task {
         if (deadline == null|| deadline.isBefore(Instant.now())){
             throw new IllegalArgumentException("Deadline is not valid");
         }
-        if (project == null){
+        if (projectEntity == null){
             throw new IllegalArgumentException("Task must be in a Project");
         }
         this.title = title;
@@ -36,11 +36,11 @@ public class Task {
         this.taskStatus = TaskStatus.TODO;
         this.createdAt= Instant.now();
         this.deadline = deadline;
-        this.project = project;
+        this.projectEntity = projectEntity;
     }
 
-    public void assign(User user){
-        if (user == null){
+    public void assign(UserEntity userEntity){
+        if (userEntity == null){
             throw new IllegalArgumentException("Assignee cannot be null");
         }
         if (taskStatus == TaskStatus.DONE){
@@ -49,7 +49,7 @@ public class Task {
         if (assignee != null){
             throw new IllegalArgumentException("This task already have an assignee");
         }
-        this.assignee= user;
+        this.assignee= userEntity;
     }
 
     public void start(){

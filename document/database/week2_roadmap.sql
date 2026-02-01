@@ -93,7 +93,7 @@ VALUES
 (N'Tạo socket server', N'Realtime chat', 'IN_PROGRESS', DATEADD(day, 7, SYSDATETIME()), 4, 2),
 (N'Gửi tin nhắn', N'Chat feature', 'TODO', DATEADD(day, 10, SYSDATETIME()), 4, 3),
 (N'Lưu lịch sử chat', N'Database message', 'DONE', DATEADD(day, 12, SYSDATETIME()), 4, 4),
-(N'Thông báo online', N'Status user', 'TODO', DATEADD(day, 13, SYSDATETIME()), 4, NULL),
+(N'Thông báo online', N'Status userEntity', 'TODO', DATEADD(day, 13, SYSDATETIME()), 4, NULL),
 
 -- thêm cho đủ số lượng
 (N'Fix bug UI', N'Sửa giao diện', 'IN_PROGRESS', DATEADD(day, 11, SYSDATETIME()), 1, 2),

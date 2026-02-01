@@ -1,8 +1,8 @@
 package com.example.taskmanagement.service;
 
-import com.example.taskmanagement.model.Project;
-import com.example.taskmanagement.model.Task;
-import com.example.taskmanagement.model.User;
+import com.example.taskmanagement.entity.ProjectEntity;
+import com.example.taskmanagement.entity.TaskEntity;
+import com.example.taskmanagement.entity.UserEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -12,78 +12,78 @@ import java.util.Map;
 @Service
 public class TaskService {
 
-    private Map<Long,Task> taskStore=new HashMap<>();
-    private Map<Long,User> userStore=new HashMap<>();
-    private Map<Long,Project> projectStore=new HashMap<>();
+    private Map<Long, TaskEntity> taskStore=new HashMap<>();
+    private Map<Long, UserEntity> userStore=new HashMap<>();
+    private Map<Long, ProjectEntity> projectStore=new HashMap<>();
 
     private Long taskIdSequency=1L;
 
-    public Task createTask(String title, String description, Instant deadline, Long projectId){
-        Task task= new Task(title,description,deadline,getProjectOrThrow(projectId));
-        task.setId(taskIdSequency++);
-        taskStore.put(task.getId(),task);
-        return task;
+    public TaskEntity createTask(String title, String description, Instant deadline, Long projectId){
+        TaskEntity taskEntity = new TaskEntity(title,description,deadline,getProjectOrThrow(projectId));
+        taskEntity.setId(taskIdSequency++);
+        taskStore.put(taskEntity.getId(), taskEntity);
+        return taskEntity;
     }
 
-    public Task updateTask(Long taskId,String title, String description, Instant deadline){
-        Task task=getTaskOrThrow(taskId);
-        task.setTitle(title);
-        task.setDescription(description);
-        task.setDeadline(deadline);
-        return task;
+    public TaskEntity updateTask(Long taskId, String title, String description, Instant deadline){
+        TaskEntity taskEntity =getTaskOrThrow(taskId);
+        taskEntity.setTitle(title);
+        taskEntity.setDescription(description);
+        taskEntity.setDeadline(deadline);
+        return taskEntity;
     }
 
     public void assignTask(Long userId,Long taskId){
-        User user=getUserOrThrow(userId);
-        Task task=getTaskOrThrow(taskId);
-        task.assign(user);
+        UserEntity userEntity =getUserOrThrow(userId);
+        TaskEntity taskEntity =getTaskOrThrow(taskId);
+        taskEntity.assign(userEntity);
     }
 
     public void startTask(Long taskId){
-        Task task=getTaskOrThrow(taskId);
-        task.start();
+        TaskEntity taskEntity =getTaskOrThrow(taskId);
+        taskEntity.start();
     }
 
     public void completeTask(Long taskId){
-        Task task=getTaskOrThrow(taskId);
-        task.complete();
+        TaskEntity taskEntity =getTaskOrThrow(taskId);
+        taskEntity.complete();
     }
 
     public void deleteTask(Long taskId){
-        Task task=getTaskOrThrow(taskId);
-        taskStore.remove(task.getId());
+        TaskEntity taskEntity =getTaskOrThrow(taskId);
+        taskStore.remove(taskEntity.getId());
     }
 
-    public Task getTaskOrThrow(Long taskId){
-        Task task=taskStore.get(taskId);
-        if (task == null){
+    public TaskEntity getTaskOrThrow(Long taskId){
+        TaskEntity taskEntity =taskStore.get(taskId);
+        if (taskEntity == null){
             throw new IllegalArgumentException("Task not found");
         }
-        return task;
+        return taskEntity;
     }
 
-    public User getUserOrThrow(Long userId){
-        User user=userStore.get(userId);
-        if (user == null){
+    public UserEntity getUserOrThrow(Long userId){
+        UserEntity userEntity =userStore.get(userId);
+        if (userEntity == null){
             throw new IllegalArgumentException("User not found");
         }
-        return user;
+        return userEntity;
     }
 
-    public Project getProjectOrThrow(Long projectId){
-        Project project=projectStore.get(projectId);
-        if (project == null){
+    public ProjectEntity getProjectOrThrow(Long projectId){
+        ProjectEntity projectEntity =projectStore.get(projectId);
+        if (projectEntity == null){
             throw new IllegalArgumentException("Project not found");
         }
-        return project;
+        return projectEntity;
     }
 
-    public void addUser(User user){
-        userStore.put(user.getId(),user);
+    public void addUser(UserEntity userEntity){
+        userStore.put(userEntity.getId(), userEntity);
     }
 
-    public void addProject(Project project){
-        projectStore.put(project.getId(),project);
+    public void addProject(ProjectEntity projectEntity){
+        projectStore.put(projectEntity.getId(), projectEntity);
     }
 
 }

@@ -1,0 +1,133 @@
+{
+  "info": {
+    "_postman_id": "8ee8ad5b-39ce-4e02-b490-4f2656f78b32",
+    "name": "TaskManegement",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "45781200"
+  },
+  "item": [
+    {
+      "name": "GetAllUsers",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseURL}}/users",
+          "host": [
+            "{{baseURL}}"
+          ],
+          "path": [
+            "users"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "GetUserById",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseURL}}/users/3",
+          "host": [
+            "{{baseURL}}"
+          ],
+          "path": [
+            "users",
+            "3"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "CreateUser",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"name\": \"Quang\",\r\n    \"email\": \"raydencv25@gmail.com\",\r\n    \"password\": \"123456\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseURL}}/users",
+          "host": [
+            "{{baseURL}}"
+          ],
+          "path": [
+            "users"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "UpdateUser",
+      "request": {
+        "method": "PUT",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"name\": \"Quanggg\",\r\n    \"email\": \"raydencv25@gmail.com\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseURL}}/users/9",
+          "host": [
+            "{{baseURL}}"
+          ],
+          "path": [
+            "users",
+            "9"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "DisableUser",
+      "request": {
+        "method": "PATCH",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"name\": \"Quanggg\",\r\n    \"email\": \"raydencv25@gmail.com\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseURL}}/users/9/disable",
+          "host": [
+            "{{baseURL}}"
+          ],
+          "path": [
+            "users",
+            "9",
+            "disable"
+          ]
+        }
+      },
+      "response": []
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseURL",
+      "value": "",
+      "type": "default"
+    }
+  ]
+}

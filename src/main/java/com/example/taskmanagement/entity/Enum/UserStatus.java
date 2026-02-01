@@ -1,4 +1,4 @@
-package com.example.taskmanagement.model.Enum;
+package com.example.taskmanagement.entity.Enum;
 
 public enum UserStatus {
     ACTIVE,INACTIVE
