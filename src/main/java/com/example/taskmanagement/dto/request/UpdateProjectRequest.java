@@ -1,6 +1,6 @@
 package com.example.taskmanagement.dto.request;
 
-import jakarta.validation.constraints.Email;
+import com.example.taskmanagement.entity.ProjectEntity;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,13 +11,11 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class CreateUserRequest {
+public class UpdateProjectRequest {
 
+    private Long id;
     @NotNull(message = "Name cannot null")
     private String name;
-    @Email
-    @NotNull(message = "Email cannot null")
-    private String email;
-    @NotNull(message = "Password cannot null")
-    private String password;
+    private String description;
+
 }

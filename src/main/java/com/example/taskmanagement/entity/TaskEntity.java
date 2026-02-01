@@ -1,29 +1,43 @@
 package com.example.taskmanagement.entity;
 
 import com.example.taskmanagement.entity.Enum.TaskStatus;
+import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.Instant;
 
 @Getter
 @Setter
+@NoArgsConstructor
+@Entity
+@Table(name = "tasks")
 public class TaskEntity {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(name = "title",nullable = false)
     private String title;
+    @Column(name = "description")
     private String description;
+    @Column(name = "task_status")
+    @Enumerated(EnumType.STRING)
     private TaskStatus taskStatus;
+    @Column(name = "created_at")
     private Instant createdAt;
+    @Column(name = "deadline", nullable = false)
     private Instant deadline;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "project_id",referencedColumnName = "id",nullable = false)
     private ProjectEntity projectEntity;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "assignee_id",referencedColumnName = "id")
     private UserEntity assignee;
 
     public TaskEntity(String title, String description, Instant deadline, ProjectEntity projectEntity) {
         if (title == null|| title.isBlank()){
             throw new IllegalArgumentException("Title cannot be blank");
-        }
-        if (description == null|| description.isBlank()){
-            throw new IllegalArgumentException("Description cannot be blank");
         }
         if (deadline == null|| deadline.isBefore(Instant.now())){
             throw new IllegalArgumentException("Deadline is not valid");

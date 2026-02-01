@@ -1,89 +1,103 @@
 package com.example.taskmanagement.service;
 
+import com.example.taskmanagement.dto.request.CreateTaskRequest;
+import com.example.taskmanagement.dto.request.UpdateTaskRequest;
+import com.example.taskmanagement.dto.response.TaskResponse;
+import com.example.taskmanagement.entity.Enum.TaskStatus;
 import com.example.taskmanagement.entity.ProjectEntity;
 import com.example.taskmanagement.entity.TaskEntity;
 import com.example.taskmanagement.entity.UserEntity;
+import com.example.taskmanagement.repository.ProjectRepository;
+import com.example.taskmanagement.repository.TaskRepository;
+import com.example.taskmanagement.repository.UserRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
+@Transactional
 public class TaskService {
 
-    private Map<Long, TaskEntity> taskStore=new HashMap<>();
-    private Map<Long, UserEntity> userStore=new HashMap<>();
-    private Map<Long, ProjectEntity> projectStore=new HashMap<>();
+    private final TaskRepository taskRepository;
+    private final ProjectRepository projectRepository;
+    private final UserRepository userRepository;
 
-    private Long taskIdSequency=1L;
 
-    public TaskEntity createTask(String title, String description, Instant deadline, Long projectId){
-        TaskEntity taskEntity = new TaskEntity(title,description,deadline,getProjectOrThrow(projectId));
-        taskEntity.setId(taskIdSequency++);
-        taskStore.put(taskEntity.getId(), taskEntity);
-        return taskEntity;
+    public TaskService(TaskRepository taskRepository, ProjectRepository projectRepository, UserRepository userRepository) {
+        this.taskRepository = taskRepository;
+        this.projectRepository = projectRepository;
+        this.userRepository = userRepository;
     }
 
-    public TaskEntity updateTask(Long taskId, String title, String description, Instant deadline){
-        TaskEntity taskEntity =getTaskOrThrow(taskId);
-        taskEntity.setTitle(title);
-        taskEntity.setDescription(description);
-        taskEntity.setDeadline(deadline);
-        return taskEntity;
+    public List<TaskResponse> getAllTasks(){
+        return taskRepository.findAllWithProjectAndAssignee()
+                .stream()
+                .map(TaskResponse::new)
+                .toList();
     }
 
-    public void assignTask(Long userId,Long taskId){
-        UserEntity userEntity =getUserOrThrow(userId);
-        TaskEntity taskEntity =getTaskOrThrow(taskId);
-        taskEntity.assign(userEntity);
+    public TaskResponse getTasksById(Long id){
+        TaskEntity task=taskRepository.findById(id).orElseThrow(
+                () -> new IllegalArgumentException("Task not found")
+        );
+        return new TaskResponse(task);
     }
 
-    public void startTask(Long taskId){
-        TaskEntity taskEntity =getTaskOrThrow(taskId);
-        taskEntity.start();
+    public List<TaskResponse> getTasksByProject(Long projectId){
+        return taskRepository.findByProjectEntity_Id(projectId)
+                .stream()
+                .map(TaskResponse::new)
+                .toList();
     }
 
-    public void completeTask(Long taskId){
-        TaskEntity taskEntity =getTaskOrThrow(taskId);
-        taskEntity.complete();
+    public List<TaskResponse> getTasksByAssignee(Long assigneeId){
+        return taskRepository.findByAssignee_Id(assigneeId)
+                .stream()
+                .map(TaskResponse::new)
+                .toList();
     }
 
-    public void deleteTask(Long taskId){
-        TaskEntity taskEntity =getTaskOrThrow(taskId);
-        taskStore.remove(taskEntity.getId());
+    public void createTask(CreateTaskRequest createTaskRequest){
+        ProjectEntity project=projectRepository.findById(createTaskRequest.getProject()).orElseThrow(
+                () -> new IllegalArgumentException("Project not found")
+        );
+        TaskEntity task=new TaskEntity(
+                createTaskRequest.getTitle(),
+                createTaskRequest.getDescription(),
+                createTaskRequest.getDeadline(),
+                project);
+        taskRepository.save(task);
     }
 
-    public TaskEntity getTaskOrThrow(Long taskId){
-        TaskEntity taskEntity =taskStore.get(taskId);
-        if (taskEntity == null){
-            throw new IllegalArgumentException("Task not found");
+    public void updateTask(UpdateTaskRequest updateTaskRequest){
+        TaskEntity task=taskRepository.findById(updateTaskRequest.getId()).orElseThrow(
+                () -> new IllegalArgumentException("Task not found")
+        );
+        if (updateTaskRequest.getDeadline().isBefore(Instant.now())){
+            throw new IllegalArgumentException("Deadline is not valid");
         }
-        return taskEntity;
+        task.setTitle(updateTaskRequest.getTitle());
+        task.setDescription(updateTaskRequest.getDescription());
+        task.setDeadline(updateTaskRequest.getDeadline());
     }
 
-    public UserEntity getUserOrThrow(Long userId){
-        UserEntity userEntity =userStore.get(userId);
-        if (userEntity == null){
-            throw new IllegalArgumentException("User not found");
+    public void assign(Long taskId,Long assigneeId){
+        TaskEntity task=taskRepository.findById(taskId).orElseThrow(
+                () -> new IllegalArgumentException("Task not found")
+        );
+        UserEntity user=userRepository.findById(assigneeId).orElseThrow(
+                () -> new IllegalArgumentException("User not found")
+        );
+        if (task.getTaskStatus()== TaskStatus.DONE){
+            throw new IllegalArgumentException("Task is DONE, cannot assign");
         }
-        return userEntity;
-    }
-
-    public ProjectEntity getProjectOrThrow(Long projectId){
-        ProjectEntity projectEntity =projectStore.get(projectId);
-        if (projectEntity == null){
-            throw new IllegalArgumentException("Project not found");
+        if (task.isOverdue()){
+            throw new IllegalArgumentException("Task is end, cannot assign");
         }
-        return projectEntity;
+        task.assign(user);
     }
-
-    public void addUser(UserEntity userEntity){
-        userStore.put(userEntity.getId(), userEntity);
-    }
-
-    public void addProject(ProjectEntity projectEntity){
-        projectStore.put(projectEntity.getId(), projectEntity);
-    }
-
 }

@@ -1,22 +1,23 @@
 package com.example.taskmanagement.dto.request;
 
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.Instant;
+
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class UpdateUserRequest {
+public class UpdateTaskRequest {
 
     private Long id;
-    @NotNull(message = "Name cannot null")
-    private String name;
-    @Email
-    @NotNull(message = "Email cannot null")
-    private String email;
+    @NotNull(message = "Title cannot null")
+    private String title;
+    private String description;
+    @NotNull(message = "Deadline cannot null")
+    private Instant deadline;
 }
