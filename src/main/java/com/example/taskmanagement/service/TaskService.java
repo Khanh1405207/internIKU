@@ -65,6 +65,9 @@ public class TaskService {
         ProjectEntity project=projectRepository.findById(createTaskRequest.getProject()).orElseThrow(
                 () -> new IllegalArgumentException("Project not found")
         );
+        if (!createTaskRequest.getDeadline().isAfter(Instant.now())){
+            throw new IllegalArgumentException("Deadline must be in the future");
+        }
         TaskEntity task=new TaskEntity(
                 createTaskRequest.getTitle(),
                 createTaskRequest.getDescription(),
@@ -92,12 +95,36 @@ public class TaskService {
         UserEntity user=userRepository.findById(assigneeId).orElseThrow(
                 () -> new IllegalArgumentException("User not found")
         );
-        if (task.getTaskStatus()== TaskStatus.DONE){
-            throw new IllegalArgumentException("Task is DONE, cannot assign");
+        if (task.getTaskStatus() != TaskStatus.TODO) {
+            throw new IllegalArgumentException("Task must be TODO to assign");
         }
         if (task.isOverdue()){
             throw new IllegalArgumentException("Task is end, cannot assign");
         }
+        Long projectId=task.getProjectEntity().getId();
+        if(!projectRepository.existsByIdAndUsers_Id(projectId,assigneeId)){
+            throw new IllegalArgumentException("User is not same project of task");
+        }
         task.assign(user);
+    }
+
+    public void startTask(Long taskId){
+        TaskEntity task=taskRepository.findById(taskId).orElseThrow(
+                () -> new IllegalArgumentException("Task not found")
+        );
+        if (task.getAssignee()== null){
+            throw new IllegalArgumentException("Task must have assignee to start");
+        }
+        task.start();
+    }
+
+    public void completeTask(Long taskId){
+        TaskEntity task=taskRepository.findById(taskId).orElseThrow(
+                () -> new IllegalArgumentException("Task not found")
+        );
+        if (task.getTaskStatus() != TaskStatus.IN_PROGRESS){
+            throw new IllegalArgumentException("Task must start to complete");
+        }
+        task.complete();
     }
 }

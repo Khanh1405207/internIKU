@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.Instant;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -25,6 +26,13 @@ public class ProjectEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "created_by",referencedColumnName = "id",nullable = false)
     private UserEntity createdBy;
+    @ManyToMany
+    @JoinTable(
+            name = "project_user",
+            joinColumns = @JoinColumn(name = "project_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
+    private Set<UserEntity> users;
 
     public ProjectEntity(String name, String description, UserEntity createdBy) {
         if (name == null || name.isBlank()){
@@ -37,5 +45,12 @@ public class ProjectEntity {
         this.description = description;
         this.createdAt= Instant.now();
         this.createdBy = createdBy;
+    }
+
+    public void addMember(UserEntity user){
+        if (user == null){
+            throw new IllegalArgumentException("User cannot null");
+        }
+        this.users.add(user);
     }
 }

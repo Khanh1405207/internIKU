@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.Instant;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -33,6 +34,9 @@ public class UserEntity {
     @Column(name = "status")
     @Enumerated(EnumType.STRING)
     private UserStatus status;
+
+    @ManyToMany(mappedBy = "users")
+    private Set<ProjectEntity> projects;
 
     public UserEntity(String name, String email, String password) {
         if (name == null || name.isBlank()){

@@ -8,4 +8,5 @@ import java.util.List;
 
 @Repository
 public interface ProjectRepository extends JpaRepository<ProjectEntity,Long> {
+    boolean existsByIdAndUsers_Id(Long id, Long usersId);
 }

@@ -32,6 +32,13 @@ public class ProjectController {
         return ResponseEntity.status(201).body("Create Project successfully");
     }
 
+    @PostMapping("/{projectId}/members/{userId}")
+    public ResponseEntity<?> addMember(@PathVariable("projectId") Long projectId,
+                                       @PathVariable("userId") Long userId){
+        projectService.addMember(projectId,userId);
+        return ResponseEntity.ok("Add member successfully");
+    }
+
     @PutMapping("/{id}")
     public ResponseEntity<?> updateProject(@Valid @RequestBody UpdateProjectRequest request,
                                            @PathVariable("id") Long id){

@@ -7,6 +7,7 @@ import com.example.taskmanagement.entity.ProjectEntity;
 import com.example.taskmanagement.entity.UserEntity;
 import com.example.taskmanagement.repository.ProjectRepository;
 import com.example.taskmanagement.repository.UserRepository;
+import org.apache.coyote.BadRequestException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -54,5 +55,18 @@ public class ProjectService {
         );
         project.setName(updateProjectRequest.getName());
         project.setDescription(updateProjectRequest.getDescription());
+    }
+
+    public void addMember(Long projectId,Long userId){
+        ProjectEntity project= projectRepository.findById(projectId).orElseThrow(
+                () -> new IllegalArgumentException("Project not found")
+        );
+        UserEntity user= userRepository.findById(userId).orElseThrow(
+                () -> new IllegalArgumentException("User not found")
+        );
+        if (project.getUsers().contains(user)){
+            throw new IllegalArgumentException("User already in project");
+        }
+        project.addMember(user);
     }
 }

@@ -56,4 +56,16 @@ public class TaskController {
         taskService.assign(taskId,assigneeId);
         return ResponseEntity.ok("Assign successfully");
     }
+
+    @PostMapping("/{id}/start")
+    public ResponseEntity<?> startTask(@PathVariable("id") Long id){
+        taskService.startTask(id);
+        return ResponseEntity.ok("Task start successfully");
+    }
+
+    @PostMapping("/{id}/complete")
+    public ResponseEntity<?> completeTask(@PathVariable("id") Long id){
+        taskService.completeTask(id);
+        return ResponseEntity.ok("Task complete successfully");
+    }
 }

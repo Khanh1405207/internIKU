@@ -57,8 +57,8 @@ public class TaskEntity {
         if (userEntity == null){
             throw new IllegalArgumentException("Assignee cannot be null");
         }
-        if (taskStatus == TaskStatus.DONE){
-            throw new IllegalStateException("Cannot assign completed task");
+        if (taskStatus != TaskStatus.TODO){
+            throw new IllegalStateException("Task must be TODO to assign");
         }
         if (assignee != null){
             throw new IllegalArgumentException("This task already have an assignee");
