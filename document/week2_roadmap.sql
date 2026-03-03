@@ -35,6 +35,15 @@ CREATE TABLE tasks
     FOREIGN KEY (project_id) REFERENCES projects(id),
     FOREIGN KEY (assignee_id) REFERENCES users(id)
 );
+GO
+CREATE TABLE project_user
+(
+    project_id BIGINT NOT NULL,
+    user_id BIGINT NOT NULL,
+    PRIMARY KEY (project_id,user_id),
+    FOREIGN KEY (project_id) REFERENCES projects(id),
+    FOREIGN KEY (user_id) REFERENCES users(id)
+);
 -- thêm constraint CHECK cho tasks và users 
 GO
 ALTER TABLE tasks
@@ -116,3 +125,7 @@ GO
 SELECT id,title,[description],task_status,deadline FROM tasks WHERE assignee_id = 5;
 SELECT id,title,[description],task_status,deadline FROM tasks WHERE project_id = 2;
 SELECT id,title,[description],task_status,deadline FROM tasks WHERE task_status = 'TODO';
+SELECT * FROM users
+SELECT * FROM projects
+SELECT * FROM tasks
+SELECT * FROM project_user

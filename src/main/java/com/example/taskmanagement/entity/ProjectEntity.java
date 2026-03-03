@@ -35,12 +35,6 @@ public class ProjectEntity {
     private Set<UserEntity> users;
 
     public ProjectEntity(String name, String description, UserEntity createdBy) {
-        if (name == null || name.isBlank()){
-            throw new IllegalArgumentException("Project name cannot be blank");
-        }
-        if (createdBy == null){
-            throw new IllegalArgumentException("CreateBy cannot be blank");
-        }
         this.name = name;
         this.description = description;
         this.createdAt= Instant.now();

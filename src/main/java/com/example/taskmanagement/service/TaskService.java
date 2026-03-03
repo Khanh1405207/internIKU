@@ -7,6 +7,8 @@ import com.example.taskmanagement.entity.Enum.TaskStatus;
 import com.example.taskmanagement.entity.ProjectEntity;
 import com.example.taskmanagement.entity.TaskEntity;
 import com.example.taskmanagement.entity.UserEntity;
+import com.example.taskmanagement.exception.BadRequestException;
+import com.example.taskmanagement.exception.ResourceNotFoundException;
 import com.example.taskmanagement.repository.ProjectRepository;
 import com.example.taskmanagement.repository.TaskRepository;
 import com.example.taskmanagement.repository.UserRepository;
@@ -61,12 +63,12 @@ public class TaskService {
                 .toList();
     }
 
-    public void createTask(CreateTaskRequest createTaskRequest){
-        ProjectEntity project=projectRepository.findById(createTaskRequest.getProject()).orElseThrow(
-                () -> new IllegalArgumentException("Project not found")
+    public TaskResponse createTask(CreateTaskRequest createTaskRequest){
+        ProjectEntity project=projectRepository.findById(createTaskRequest.getProjectId()).orElseThrow(
+                () -> new ResourceNotFoundException("Project not found")
         );
         if (!createTaskRequest.getDeadline().isAfter(Instant.now())){
-            throw new IllegalArgumentException("Deadline must be in the future");
+            throw new BadRequestException("Deadline must be in the future");
         }
         TaskEntity task=new TaskEntity(
                 createTaskRequest.getTitle(),
@@ -74,57 +76,62 @@ public class TaskService {
                 createTaskRequest.getDeadline(),
                 project);
         taskRepository.save(task);
+        return new TaskResponse(task);
     }
 
-    public void updateTask(UpdateTaskRequest updateTaskRequest){
+    public TaskResponse updateTask(UpdateTaskRequest updateTaskRequest){
         TaskEntity task=taskRepository.findById(updateTaskRequest.getId()).orElseThrow(
-                () -> new IllegalArgumentException("Task not found")
+                () -> new ResourceNotFoundException("Task not found")
         );
         if (updateTaskRequest.getDeadline().isBefore(Instant.now())){
-            throw new IllegalArgumentException("Deadline is not valid");
+            throw new BadRequestException("Deadline must be in the future");
         }
         task.setTitle(updateTaskRequest.getTitle());
         task.setDescription(updateTaskRequest.getDescription());
         task.setDeadline(updateTaskRequest.getDeadline());
+        return new TaskResponse(task);
     }
 
-    public void assign(Long taskId,Long assigneeId){
+    public TaskResponse assign(Long taskId,Long assigneeId){
         TaskEntity task=taskRepository.findById(taskId).orElseThrow(
-                () -> new IllegalArgumentException("Task not found")
+                () -> new ResourceNotFoundException("Task not found")
         );
         UserEntity user=userRepository.findById(assigneeId).orElseThrow(
-                () -> new IllegalArgumentException("User not found")
+                () -> new ResourceNotFoundException("User not found")
         );
         if (task.getTaskStatus() != TaskStatus.TODO) {
-            throw new IllegalArgumentException("Task must be TODO to assign");
+            throw new BadRequestException("Task must be TODO to assign");
         }
         if (task.isOverdue()){
-            throw new IllegalArgumentException("Task is end, cannot assign");
+            throw new BadRequestException("Task is end, cannot assign");
         }
         Long projectId=task.getProjectEntity().getId();
         if(!projectRepository.existsByIdAndUsers_Id(projectId,assigneeId)){
-            throw new IllegalArgumentException("User is not same project of task");
+            throw new BadRequestException("User is not same project of task");
         }
         task.assign(user);
+        return new TaskResponse(task);
     }
 
-    public void startTask(Long taskId){
+    public TaskResponse startTask(Long taskId){
         TaskEntity task=taskRepository.findById(taskId).orElseThrow(
-                () -> new IllegalArgumentException("Task not found")
+                () -> new ResourceNotFoundException("Task not found")
         );
         if (task.getAssignee()== null){
-            throw new IllegalArgumentException("Task must have assignee to start");
+            throw new BadRequestException("Task must have assignee to start");
         }
         task.start();
+        return new TaskResponse(task);
     }
 
-    public void completeTask(Long taskId){
+    public TaskResponse completeTask(Long taskId){
         TaskEntity task=taskRepository.findById(taskId).orElseThrow(
-                () -> new IllegalArgumentException("Task not found")
+                () -> new ResourceNotFoundException("Task not found")
         );
         if (task.getTaskStatus() != TaskStatus.IN_PROGRESS){
-            throw new IllegalArgumentException("Task must start to complete");
+            throw new BadRequestException("Task must start to complete");
         }
         task.complete();
+        return new TaskResponse(task);
     }
 }

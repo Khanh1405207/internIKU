@@ -1,6 +1,6 @@
 package com.example.taskmanagement.dto.request;
 
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,9 +12,12 @@ import lombok.Setter;
 @AllArgsConstructor
 public class CreateProjectRequest {
 
-    @NotNull(message = "Name cannot null")
+    @NotBlank(message = "Name cannot be blank")
+    @Size(min = 3, max = 100, message = "Name must be between 3 and 100 characters")
     private String name;
+
     private String description;
-    @NotNull(message = "CreatedBy cannot null")
+
+    @NotNull(message = "CreatedBy cannot be null")
     private Long createdBy;
 }

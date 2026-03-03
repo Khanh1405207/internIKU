@@ -5,6 +5,8 @@ import com.example.taskmanagement.dto.request.UpdateProjectRequest;
 import com.example.taskmanagement.dto.response.ProjectResponse;
 import com.example.taskmanagement.entity.ProjectEntity;
 import com.example.taskmanagement.entity.UserEntity;
+import com.example.taskmanagement.exception.ConflictException;
+import com.example.taskmanagement.exception.ResourceNotFoundException;
 import com.example.taskmanagement.repository.ProjectRepository;
 import com.example.taskmanagement.repository.UserRepository;
 import org.apache.coyote.BadRequestException;
@@ -33,40 +35,43 @@ public class ProjectService {
 
     public ProjectResponse getProjectById(Long id){
         ProjectEntity project=projectRepository.findById(id).orElseThrow(
-                () -> new IllegalArgumentException("Project not found")
+                () -> new ResourceNotFoundException("Project not found")
         );
         return new ProjectResponse(project);
     }
 
-    public void createProject(CreateProjectRequest createProjectRequest){
+    public ProjectResponse createProject(CreateProjectRequest createProjectRequest){
         UserEntity userEntity=userRepository.findById(createProjectRequest.getCreatedBy()).orElseThrow(
-                () -> new IllegalArgumentException("User not found")
+                () -> new ResourceNotFoundException("User not found")
         );
         ProjectEntity project=new ProjectEntity(
                 createProjectRequest.getName(),
                 createProjectRequest.getDescription(),
                 userEntity);
         projectRepository.save(project);
+        return new ProjectResponse(project);
     }
 
-    public void updateProject(UpdateProjectRequest updateProjectRequest){
+    public ProjectResponse updateProject(UpdateProjectRequest updateProjectRequest){
         ProjectEntity project=projectRepository.findById(updateProjectRequest.getId()).orElseThrow(
-                () -> new IllegalArgumentException("Project not found")
+                () -> new ResourceNotFoundException("Project not found")
         );
         project.setName(updateProjectRequest.getName());
         project.setDescription(updateProjectRequest.getDescription());
+        return new ProjectResponse(project);
     }
 
-    public void addMember(Long projectId,Long userId){
+    public ProjectResponse addMember(Long projectId,Long userId){
         ProjectEntity project= projectRepository.findById(projectId).orElseThrow(
-                () -> new IllegalArgumentException("Project not found")
+                () -> new ResourceNotFoundException("Project not found")
         );
         UserEntity user= userRepository.findById(userId).orElseThrow(
-                () -> new IllegalArgumentException("User not found")
+                () -> new ResourceNotFoundException("User not found")
         );
         if (project.getUsers().contains(user)){
-            throw new IllegalArgumentException("User already in project");
+            throw new ConflictException("User already in project");
         }
         project.addMember(user);
+        return new ProjectResponse(project);
     }
 }

@@ -1,11 +1,16 @@
 package com.example.taskmanagement.controller;
 
+import com.example.taskmanagement.dto.ApiResponse;
 import com.example.taskmanagement.dto.request.CreateProjectRequest;
 import com.example.taskmanagement.dto.request.UpdateProjectRequest;
+import com.example.taskmanagement.dto.response.ProjectResponse;
 import com.example.taskmanagement.service.ProjectService;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/projects")
@@ -17,33 +22,43 @@ public class ProjectController {
     }
 
     @GetMapping
-    public ResponseEntity<?> getAllProjects(){
-        return ResponseEntity.ok(projectService.getAllProjects());
+    public ResponseEntity<ApiResponse<List<ProjectResponse>>> getAllProjects(){
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ApiResponse.success(projectService.getAllProjects()));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getProjectById(@PathVariable("id") Long id){
-        return ResponseEntity.ok(projectService.getProjectById(id));
+    public ResponseEntity<ApiResponse<ProjectResponse>> getProjectById(@PathVariable("id") Long id){
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ApiResponse.success(projectService.getProjectById(id)));
     }
 
     @PostMapping
-    public ResponseEntity<?> createProject(@Valid @RequestBody CreateProjectRequest request){
-        projectService.createProject(request);
-        return ResponseEntity.status(201).body("Create Project successfully");
+    public ResponseEntity<ApiResponse<ProjectResponse>> createProject(@Valid @RequestBody CreateProjectRequest request){
+        ProjectResponse projectResponse=projectService.createProject(request);
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(ApiResponse.create(projectResponse));
     }
 
     @PostMapping("/{projectId}/members/{userId}")
-    public ResponseEntity<?> addMember(@PathVariable("projectId") Long projectId,
+    public ResponseEntity<ApiResponse<ProjectResponse>> addMember(@PathVariable("projectId") Long projectId,
                                        @PathVariable("userId") Long userId){
-        projectService.addMember(projectId,userId);
-        return ResponseEntity.ok("Add member successfully");
+        ProjectResponse projectResponse=projectService.addMember(projectId,userId);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ApiResponse.success(projectResponse));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateProject(@Valid @RequestBody UpdateProjectRequest request,
+    public ResponseEntity<ApiResponse<ProjectResponse>> updateProject(@Valid @RequestBody UpdateProjectRequest request,
                                            @PathVariable("id") Long id){
         request.setId(id);
-        projectService.updateProject(request);
-        return ResponseEntity.ok("Update Project successfully");
+        ProjectResponse projectResponse=projectService.updateProject(request);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ApiResponse.success(projectResponse));
     }
 }

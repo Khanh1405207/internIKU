@@ -1,6 +1,8 @@
 package com.example.taskmanagement.entity;
 
 import com.example.taskmanagement.entity.Enum.TaskStatus;
+import com.example.taskmanagement.exception.BadRequestException;
+import com.example.taskmanagement.exception.ConflictException;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -36,15 +38,6 @@ public class TaskEntity {
     private UserEntity assignee;
 
     public TaskEntity(String title, String description, Instant deadline, ProjectEntity projectEntity) {
-        if (title == null|| title.isBlank()){
-            throw new IllegalArgumentException("Title cannot be blank");
-        }
-        if (deadline == null|| deadline.isBefore(Instant.now())){
-            throw new IllegalArgumentException("Deadline is not valid");
-        }
-        if (projectEntity == null){
-            throw new IllegalArgumentException("Task must be in a Project");
-        }
         this.title = title;
         this.description = description;
         this.taskStatus = TaskStatus.TODO;
@@ -55,36 +48,36 @@ public class TaskEntity {
 
     public void assign(UserEntity userEntity){
         if (userEntity == null){
-            throw new IllegalArgumentException("Assignee cannot be null");
+            throw new BadRequestException("Assignee cannot be null");
         }
-        if (taskStatus != TaskStatus.TODO){
-            throw new IllegalStateException("Task must be TODO to assign");
+        if (this.taskStatus != TaskStatus.TODO){
+            throw new BadRequestException("Task must be TODO to assign");
         }
-        if (assignee != null){
-            throw new IllegalArgumentException("This task already have an assignee");
+        if (this.assignee != null){
+            throw new ConflictException("This task already have an assignee");
         }
         this.assignee= userEntity;
     }
 
     public void start(){
-        if (taskStatus == TaskStatus.DONE){
-            throw new IllegalStateException("Task done, cannot start again");
+        if (this.taskStatus == TaskStatus.DONE){
+            throw new BadRequestException("Task done, cannot start again");
         }
-        if (taskStatus == TaskStatus.IN_PROGRESS){
-            throw new IllegalStateException(("Task already started"));
+        if (this.taskStatus == TaskStatus.IN_PROGRESS){
+            throw new ConflictException(("Task already started"));
         }
-        if (assignee == null){
-            throw new IllegalArgumentException("No assignee, Task cannot start");
+        if (this.assignee == null){
+            throw new BadRequestException("No assignee, Task cannot start");
         }
         this.taskStatus = TaskStatus.IN_PROGRESS;
     }
 
     public void complete(){
-        if (taskStatus == TaskStatus.DONE){
-            throw new IllegalStateException(("Task already done"));
+        if (this.taskStatus == TaskStatus.DONE){
+            throw new ConflictException(("Task already done"));
         }
-        if (taskStatus != TaskStatus.IN_PROGRESS){
-            throw new IllegalStateException(("Task must be IN_PROGRESS to complete"));
+        if (this.taskStatus != TaskStatus.IN_PROGRESS){
+            throw new BadRequestException(("Task must be IN_PROGRESS to complete"));
         }
         this.taskStatus = TaskStatus.DONE;
     }

@@ -1,6 +1,7 @@
 package com.example.taskmanagement.entity;
 
 import com.example.taskmanagement.entity.Enum.UserStatus;
+import com.example.taskmanagement.exception.BadRequestException;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -39,18 +40,6 @@ public class UserEntity {
     private Set<ProjectEntity> projects;
 
     public UserEntity(String name, String email, String password) {
-        if (name == null || name.isBlank()){
-            throw new IllegalArgumentException("Name cannot be blank");
-        }
-        if (email == null || email.isBlank()){
-            throw new IllegalArgumentException("Email cannot be blank");
-        }
-        if (!email.contains("@")){
-            throw new IllegalArgumentException("Email format invalid");
-        }
-        if (password == null || password.length() <6){
-            throw new IllegalArgumentException("Password must be at least 6 characters");
-        }
         this.name = name;
         this.email = email;
         this.password = password;
@@ -59,8 +48,8 @@ public class UserEntity {
     }
 
     public void deactivate(){
-        if (status == UserStatus.INACTIVE){
-            throw new IllegalStateException("User already inactive");
+        if (this.status == UserStatus.INACTIVE){
+            throw new BadRequestException("User already inactive");
         }
         this.status = UserStatus.INACTIVE;
     }
