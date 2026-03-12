@@ -2,6 +2,9 @@ package com.example.taskmanagement.dto.response;
 
 import com.example.taskmanagement.entity.RoleEntity;
 import com.example.taskmanagement.entity.UserEntity;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,18 +17,17 @@ import java.util.stream.Collectors;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserResponse {
-
+public class RegisterResponse {
     private Long id;
     private String name;
     private String email;
     private Set<String> roles;
 
-    public UserResponse(UserEntity userEntity){
-        this.id=userEntity.getId();
-        this.name= userEntity.getName();
-        this.email= userEntity.getEmail();
-        this.roles= userEntity.getRoles()
+    public RegisterResponse(UserEntity user){
+        this.id=user.getId();
+        this.name=user.getName();
+        this.email=user.getEmail();
+        this.roles=user.getRoles()
                 .stream()
                 .map(RoleEntity::getRoleName)
                 .collect(Collectors.toSet());

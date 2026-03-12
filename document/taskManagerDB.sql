@@ -44,6 +44,22 @@ CREATE TABLE project_user
     FOREIGN KEY (project_id) REFERENCES projects(id),
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
+GO
+CREATE TABLE roles
+(
+    id BIGINT PRIMARY KEY IDENTITY(1,1),
+    role_name VARCHAR(50)
+
+);
+GO
+CREATE TABLE user_role
+(
+    user_id BIGINT NOT NULL,
+    role_id BIGINT NOT NULL,
+    PRIMARY KEY (user_id,role_id),
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (role_id) REFERENCES roles(id)
+)
 -- thêm constraint CHECK cho tasks và users 
 GO
 ALTER TABLE tasks
@@ -63,12 +79,12 @@ GO
 -- insert users
 INSERT INTO users (name, email, password, status)
 VALUES
-(N'Khanh', 'khanh@gmail.com', '123456', 'ACTIVE'),
-(N'An', 'an@gmail.com', '123456', 'ACTIVE'),
-(N'Binh', 'binh@gmail.com', '123456', 'ACTIVE'),
-(N'Cuong', 'cuong@gmail.com', '123456', 'ACTIVE'),
-(N'Dung', 'dung@gmail.com', '123456', 'ACTIVE'),
-(N'Hoa', 'hoa@gmail.com', '123456', 'INACTIVE');
+(N'Khanh', 'khanh@gmail.com', '$2a$10$4g.68/DHXFMaljdJ5bpatOs2PIW11H.6/PAiIG1hz/s7Sh1026HZa', 'ACTIVE'),
+(N'An', 'an@gmail.com', '$2a$10$4g.68/DHXFMaljdJ5bpatOs2PIW11H.6/PAiIG1hz/s7Sh1026HZa', 'ACTIVE'),
+(N'Binh', 'binh@gmail.com', '$2a$10$4g.68/DHXFMaljdJ5bpatOs2PIW11H.6/PAiIG1hz/s7Sh1026HZa', 'ACTIVE'),
+(N'Cuong', 'cuong@gmail.com', '$2a$10$4g.68/DHXFMaljdJ5bpatOs2PIW11H.6/PAiIG1hz/s7Sh1026HZa', 'ACTIVE'),
+(N'Dung', 'dung@gmail.com', '$2a$10$4g.68/DHXFMaljdJ5bpatOs2PIW11H.6/PAiIG1hz/s7Sh1026HZa', 'ACTIVE'),
+(N'Hoa', 'hoa@gmail.com', '$2a$10$4g.68/DHXFMaljdJ5bpatOs2PIW11H.6/PAiIG1hz/s7Sh1026HZa', 'INACTIVE');
 GO
 --insert projects
 INSERT INTO projects (name, description, created_by)
@@ -111,6 +127,22 @@ VALUES
 (N'Test bảo mật', N'Security test', 'IN_PROGRESS', DATEADD(day, 17, SYSDATETIME()), 4, 2),
 (N'Deploy server', N'Đưa lên production', 'TODO', DATEADD(day, 25, SYSDATETIME()), 1, NULL);
 GO
+-- insert roles
+INSERT INTO roles(role_name)
+VALUES
+('USER'),
+('MANAGER');
+GO
+-- insert user_roles
+INSERT INTO user_role
+VALUES
+(1,2),
+(2,1),
+(3,1),
+(4,1),
+(5,1),
+(6,1);
+GO
 -- querry kiểm tra lỗi
 INSERT INTO tasks (title, description, task_status, deadline, project_id)
 VALUES (N'Test sai status', N'Lỗi', 'WAITING', DATEADD(day, 5, SYSDATETIME()), 1);
@@ -125,7 +157,10 @@ GO
 SELECT id,title,[description],task_status,deadline FROM tasks WHERE assignee_id = 5;
 SELECT id,title,[description],task_status,deadline FROM tasks WHERE project_id = 2;
 SELECT id,title,[description],task_status,deadline FROM tasks WHERE task_status = 'TODO';
+
 SELECT * FROM users
 SELECT * FROM projects
 SELECT * FROM tasks
+SELECT * FROM roles
 SELECT * FROM project_user
+SELECT * FROM user_role

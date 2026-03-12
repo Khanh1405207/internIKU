@@ -12,6 +12,8 @@ import com.example.taskmanagement.exception.ResourceNotFoundException;
 import com.example.taskmanagement.repository.ProjectRepository;
 import com.example.taskmanagement.repository.TaskRepository;
 import com.example.taskmanagement.repository.UserRepository;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -58,6 +60,13 @@ public class TaskService {
 
     public List<TaskResponse> getTasksByAssignee(Long assigneeId){
         return taskRepository.findByAssignee_Id(assigneeId)
+                .stream()
+                .map(TaskResponse::new)
+                .toList();
+    }
+
+    public List<TaskResponse> getMyTask(String email){
+        return taskRepository.findByAssignee_Email(email)
                 .stream()
                 .map(TaskResponse::new)
                 .toList();

@@ -15,6 +15,7 @@ import java.time.Instant;
 @AllArgsConstructor
 public class TaskResponse {
 
+    private Long id;
     private String title;
     private String description;
     private Instant deadline;
@@ -22,6 +23,7 @@ public class TaskResponse {
     private String assignee;
 
     public TaskResponse(TaskEntity task){
+        this.id=task.getId();
         this.title=task.getTitle();
         this.description=task.getDescription();
         this.deadline=task.getDeadline();

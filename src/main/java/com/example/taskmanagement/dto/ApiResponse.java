@@ -34,6 +34,10 @@ public class ApiResponse<T> {
         return new ApiResponse<>(404,message,null);
     }
 
+    public static <T> ApiResponse<T> unauthorized(String message){
+        return new ApiResponse<>(401,message,null);
+    }
+
     public static <T> ApiResponse<T> internalServerError(T data){
         return new ApiResponse<>(500, "Internal Server Error", data);
     }

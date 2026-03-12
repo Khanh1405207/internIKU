@@ -7,6 +7,8 @@ import com.example.taskmanagement.dto.response.TaskResponse;
 import com.example.taskmanagement.service.TaskService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -46,6 +48,14 @@ public class TaskController {
         return ResponseEntity
                 .status(200)
                 .body(ApiResponse.success(taskService.getTasksByAssignee(id)));
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<ApiResponse<List<TaskResponse>>> getMyTask(Authentication authentication){
+        String email=authentication.getName();
+        return ResponseEntity
+                .status(200)
+                .body(ApiResponse.success(taskService.getMyTask(email)));
     }
 
     @PostMapping

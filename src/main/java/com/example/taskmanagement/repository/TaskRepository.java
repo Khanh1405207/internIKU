@@ -13,6 +13,8 @@ public interface TaskRepository extends JpaRepository<TaskEntity,Long> {
 
     List<TaskEntity> findByAssignee_Id(Long assigneeId);
 
+    List<TaskEntity> findByAssignee_Email(String assigneeEmail);
+
     @Query("""
        SELECT t FROM TaskEntity t
        LEFT JOIN FETCH t.projectEntity

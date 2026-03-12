@@ -11,11 +11,13 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ProjectResponse {
+    private Long id;
     private String name;
     private String description;
     private String createdBy;
 
     public ProjectResponse(ProjectEntity project){
+        this.id=project.getId();
         this.name=project.getName();
         this.description=project.getDescription();
         this.createdBy=project.getCreatedBy().getName();

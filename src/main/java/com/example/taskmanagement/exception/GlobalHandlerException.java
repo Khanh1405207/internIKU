@@ -4,6 +4,9 @@ import com.example.taskmanagement.dto.ApiResponse;
 import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -57,6 +60,30 @@ public class GlobalHandlerException {
         return ResponseEntity
                 .status(status)
                 .body(ApiResponse.conflict(e.getMessage()));
+    }
+
+    @ExceptionHandler(UsernameNotFoundException.class)
+    public ResponseEntity<ApiResponse<Void>> handleUsernameNotFound(UsernameNotFoundException e){
+        HttpStatus status=HttpStatus.NOT_FOUND;
+        return ResponseEntity
+                .status(status)
+                .body(ApiResponse.notFound(e.getMessage()));
+    }
+
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<ApiResponse<Void>> handleBadCredentials(BadCredentialsException e){
+        HttpStatus status=HttpStatus.UNAUTHORIZED;
+        return ResponseEntity
+                .status(status)
+                .body(ApiResponse.unauthorized(e.getMessage()));
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ApiResponse<Void>> handleAccessDenied(AccessDeniedException e){
+        HttpStatus status=HttpStatus.FORBIDDEN;
+        return ResponseEntity
+                .status(status)
+                .body(new ApiResponse<>(403, "Access denied", null));
     }
 
     @ExceptionHandler(Exception.class)
