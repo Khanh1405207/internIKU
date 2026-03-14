@@ -44,8 +44,9 @@ public class SecurityConfig {
                 .csrf(scrf -> scrf.disable())
                 .authorizeHttpRequests(auth->
                         auth.requestMatchers("/api/auth/**").permitAll()
-                                .requestMatchers("/api/projects/**").hasRole("MANAGER")
+                                .requestMatchers("/api/users/**/disable").denyAll()
                                 .requestMatchers("/api/tasks/me").authenticated()
+                                .requestMatchers("/api/projects/**").hasRole("MANAGER")
                                 .requestMatchers("/api/tasks/**").hasRole("MANAGER")
                                 .anyRequest().authenticated()
                 )

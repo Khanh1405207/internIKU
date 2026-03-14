@@ -10,6 +10,7 @@ import com.example.taskmanagement.exception.ConflictException;
 import com.example.taskmanagement.exception.ResourceNotFoundException;
 import com.example.taskmanagement.repository.RoleRepository;
 import com.example.taskmanagement.repository.UserRepository;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,10 +21,12 @@ import java.util.List;
 public class UserService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
+    private final BCryptPasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository, RoleRepository roleRepository) {
+    public UserService(UserRepository userRepository, RoleRepository roleRepository, BCryptPasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public List<UserResponse> getAllUsers(){
@@ -44,10 +47,11 @@ public class UserService {
         if (userRepository.existsByEmail(createUserRequest.getEmail())){
             throw new ConflictException("Email already exists");
         }
+        String password=passwordEncoder.encode(createUserRequest.getPassword());
         UserEntity userEntity =new UserEntity(
                 createUserRequest.getName(),
                 createUserRequest.getEmail(),
-                createUserRequest.getPassword());
+                password);
         RoleEntity role=roleRepository.findByRoleName("USER").orElseThrow(
                 () -> new ResourceNotFoundException("Role not found")
         );
