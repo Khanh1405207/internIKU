@@ -5,8 +5,8 @@
 |-----|----------|
 | Class được test | TaskService |
 | Framework | JUnit 5 + Mockito |
-| Số test case | 13 |
-| Kết quả | 13/13 passed |
+| Số test case | 12 |
+| Kết quả | 12/12 passed |
 
 ---
 
@@ -43,7 +43,7 @@
 
 ---
 
-### assign (7 cases)
+### assign (6 cases)
 | Test case | Loại | Kết quả |
 |-----------|------|---------|
 | `assign_success` | happy path | V |

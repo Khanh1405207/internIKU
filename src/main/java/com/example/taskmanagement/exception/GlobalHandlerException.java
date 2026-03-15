@@ -1,6 +1,7 @@
 package com.example.taskmanagement.exception;
 
 import com.example.taskmanagement.dto.ApiResponse;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -87,7 +88,12 @@ public class GlobalHandlerException {
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ApiResponse<Void>> handleException(Exception e) {
+    public ResponseEntity<?> handleException(Exception e, HttpServletRequest request) throws Exception {
+
+        if (request.getRequestURI().contains("/v3/api-docs")) {
+            throw e;
+        }
+
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(new ApiResponse<>(500, "Internal server error", null));

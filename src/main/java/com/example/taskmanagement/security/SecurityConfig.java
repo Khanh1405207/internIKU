@@ -33,18 +33,24 @@ public class SecurityConfig {
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration){
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
         return configuration.getAuthenticationManager();
     }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity security, CustomAccessDeniedHandler customAccessDeniedHandler, CustomAuthenticationEntryPoint customAuthenticationEntryPoint){
+    public SecurityFilterChain filterChain(HttpSecurity security, CustomAccessDeniedHandler customAccessDeniedHandler, CustomAuthenticationEntryPoint customAuthenticationEntryPoint) throws Exception {
         security.cors(Customizer.withDefaults())
                 .sessionManagement(ses -> ses.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .csrf(scrf -> scrf.disable())
                 .authorizeHttpRequests(auth->
                         auth.requestMatchers("/api/auth/**").permitAll()
-                                .requestMatchers("/api/users/**/disable").denyAll()
+                                .requestMatchers(
+                                        "/swagger-ui/**",
+                                        "/swagger-ui.html",
+                                        "/v3/api-docs",
+                                        "/v3/api-docs/**"
+                                ).permitAll()
+                                .requestMatchers("/api/users/{id}/disable").denyAll()
                                 .requestMatchers("/api/tasks/me").authenticated()
                                 .requestMatchers("/api/projects/**").hasRole("MANAGER")
                                 .requestMatchers("/api/tasks/**").hasRole("MANAGER")

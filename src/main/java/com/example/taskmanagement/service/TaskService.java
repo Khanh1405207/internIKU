@@ -46,7 +46,7 @@ public class TaskService {
 
     public TaskResponse getTasksById(Long id){
         TaskEntity task=taskRepository.findById(id).orElseThrow(
-                () -> new IllegalArgumentException("Task not found")
+                () -> new ResourceNotFoundException("Task not found")
         );
         return new TaskResponse(task);
     }
