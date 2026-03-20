@@ -4,6 +4,7 @@ import com.example.taskmanagement.dto.request.CreateTaskRequest;
 import com.example.taskmanagement.dto.request.UpdateTaskRequest;
 import com.example.taskmanagement.dto.response.TaskResponse;
 import com.example.taskmanagement.entity.Enum.TaskStatus;
+import com.example.taskmanagement.entity.Enum.UserStatus;
 import com.example.taskmanagement.entity.ProjectEntity;
 import com.example.taskmanagement.entity.TaskEntity;
 import com.example.taskmanagement.entity.UserEntity;
@@ -108,6 +109,9 @@ public class TaskService {
         UserEntity user=userRepository.findById(assigneeId).orElseThrow(
                 () -> new ResourceNotFoundException("User not found")
         );
+        if (UserStatus.INACTIVE.equals(user.getStatus())) {
+            throw new BadRequestException("Cannot assign task to inactive user");
+        }
         if (task.getTaskStatus() != TaskStatus.TODO) {
             throw new BadRequestException("Task must be TODO to assign");
         }

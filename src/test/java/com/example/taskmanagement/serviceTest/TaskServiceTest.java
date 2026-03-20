@@ -4,6 +4,7 @@ import com.example.taskmanagement.dto.request.CreateTaskRequest;
 import com.example.taskmanagement.dto.request.UpdateTaskRequest;
 import com.example.taskmanagement.dto.response.TaskResponse;
 import com.example.taskmanagement.entity.Enum.TaskStatus;
+import com.example.taskmanagement.entity.Enum.UserStatus;
 import com.example.taskmanagement.entity.ProjectEntity;
 import com.example.taskmanagement.entity.TaskEntity;
 import com.example.taskmanagement.entity.UserEntity;
@@ -204,6 +205,22 @@ public class TaskServiceTest {
                 verifyTaskAndUserLookupCalled();
         verify(projectRepository).existsByIdAndUsers_Id(anyLong(), anyLong());
     }
+
+        @Test
+        public void assign_userInactive_throwException(){
+                TaskEntity task = taskWithProject();
+                UserEntity inactiveUser = new UserEntity();
+                inactiveUser.setStatus(UserStatus.INACTIVE);
+
+                stubTaskFound(task);
+                when(userRepository.findById(anyLong())).thenReturn(Optional.of(inactiveUser));
+
+                Assertions.assertThrows(BadRequestException.class,
+                                () -> taskService.assign(TASK_ID, USER_ID));
+
+                verifyTaskAndUserLookupCalled();
+                verify(projectRepository, never()).existsByIdAndUsers_Id(anyLong(), anyLong());
+        }
 
         private Instant futureDeadline() {
                 return Instant.now().plusSeconds(ONE_HOUR_SECONDS);

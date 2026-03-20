@@ -3,13 +3,14 @@ package com.example.taskmanagement.service;
 import com.example.taskmanagement.dto.request.CreateProjectRequest;
 import com.example.taskmanagement.dto.request.UpdateProjectRequest;
 import com.example.taskmanagement.dto.response.ProjectResponse;
+import com.example.taskmanagement.entity.Enum.UserStatus;
 import com.example.taskmanagement.entity.ProjectEntity;
 import com.example.taskmanagement.entity.UserEntity;
+import com.example.taskmanagement.exception.BadRequestException;
 import com.example.taskmanagement.exception.ConflictException;
 import com.example.taskmanagement.exception.ResourceNotFoundException;
 import com.example.taskmanagement.repository.ProjectRepository;
 import com.example.taskmanagement.repository.UserRepository;
-import org.apache.coyote.BadRequestException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -68,6 +69,9 @@ public class ProjectService {
         UserEntity user= userRepository.findById(userId).orElseThrow(
                 () -> new ResourceNotFoundException("User not found")
         );
+        if (UserStatus.INACTIVE.equals(user.getStatus())) {
+            throw new BadRequestException("Cannot add inactive user to project");
+        }
         if (project.getUsers().contains(user)){
             throw new ConflictException("User already in project");
         }

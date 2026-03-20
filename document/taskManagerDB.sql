@@ -164,3 +164,5 @@ SELECT * FROM tasks
 SELECT * FROM roles
 SELECT * FROM project_user
 SELECT * FROM user_role
+
+UPDATE users SET [password]='$2a$10$4g.68/DHXFMaljdJ5bpatOs2PIW11H.6/PAiIG1hz/s7Sh1026HZa' WHERE id=9
