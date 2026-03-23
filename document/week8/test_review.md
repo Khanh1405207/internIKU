@@ -5,8 +5,8 @@
 |-----|----------|
 | Class được test | TaskService |
 | Framework | JUnit 5 + Mockito |
-| Số test case | 12 |
-| Kết quả | 12/12 passed |
+| Số test case | 23 |
+| Kết quả | 23/23 passed |
 
 ---
 
@@ -43,7 +43,7 @@
 
 ---
 
-### assign (6 cases)
+### assign (7 cases)
 | Test case | Loại | Kết quả |
 |-----------|------|---------|
 | `assign_success` | happy path | V |
@@ -52,17 +52,45 @@
 | `assign_taskNotTodo_throwException` | exception | V |
 | `assign_taskIsOverdue_throwException` | exception | V |
 | `assign_userNotInProject_throwException` | exception | V |
+| `assign_userInactive_throwException` | exception | V |
 
 **Nhận xét:** Coverage tốt nhất trong 3 nhóm. Các verify `never()` phản ánh đúng thứ tự fail-fast của logic service — sát với thực tế.
+
+---
+
+### startTask (5 cases)
+| Test case | Loại | Kết quả |
+|-----------|------|---------|
+| `startTask_success_assigneeUser` | happy path | V |
+| `startTask_success_manager` | happy path | V |
+| `startTask_taskNotFound_throwException` | exception | V |
+| `startTask_noAssignee_throwException` | exception | V |
+| `startTask_nonAssigneeUser_throwAccessDenied` | authorization | V |
+
+**Nhận xét:** Đã cover đúng rule mới: USER chỉ start task của chính mình, MANAGER có thể thao tác toàn cục.
+
+---
+
+### completeTask (5 cases)
+| Test case | Loại | Kết quả |
+|-----------|------|---------|
+| `completeTask_success_assigneeUser` | happy path | V |
+| `completeTask_success_manager` | happy path | V |
+| `completeTask_taskNotFound_throwException` | exception | V |
+| `completeTask_taskNotInProgress_throwException` | exception | V |
+| `completeTask_nonAssigneeUser_throwAccessDenied` | authorization | V |
+
+**Nhận xét:** Bao phủ cả điều kiện trạng thái (`IN_PROGRESS`) và kiểm soát quyền theo assignee/manager.
 
 ---
 
 ## Điểm mạnh
 - Tên test rõ ràng, đúng pattern method_condition_expectedResult.
 - Có kết hợp assert kết quả và verify interaction với mock.
+- Có kiểm thử authorization ở service layer bằng SecurityContextHolder.
 - Refactor helper methods giúp giảm lặp code mà không làm mất ý nghĩa của từng test.
 
 ## Điểm cần cải thiện
-- assign_success hiện mới assert response khác null; nên assert thêm assignee hoặc trạng thái object sau khi assign.
+- assign_success hiện mới assert response khác null; nên assert thêm assignee trong response.
 - createTask_success có thể capture TaskEntity được save để assert title, deadline, project.
-- Chưa có test cho getAllTasks, getTasksById, getTasksByProject, getTasksByAssignee, getMyTask, startTask, completeTask.
+- Chưa có test cho getAllTasks, getTasksById, getTasksByProject, getTasksByAssignee, getMyTask.

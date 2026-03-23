@@ -13,15 +13,14 @@ import com.example.taskmanagement.exception.ResourceNotFoundException;
 import com.example.taskmanagement.repository.ProjectRepository;
 import com.example.taskmanagement.repository.TaskRepository;
 import com.example.taskmanagement.repository.UserRepository;
-import org.springframework.security.core.Authentication;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Service
 @Transactional
@@ -133,6 +132,7 @@ public class TaskService {
         if (task.getAssignee()== null){
             throw new BadRequestException("Task must have assignee to start");
         }
+        validateTaskOwnership(task);
         task.start();
         return new TaskResponse(task);
     }
@@ -144,7 +144,30 @@ public class TaskService {
         if (task.getTaskStatus() != TaskStatus.IN_PROGRESS){
             throw new BadRequestException("Task must start to complete");
         }
+        validateTaskOwnership(task);
         task.complete();
         return new TaskResponse(task);
+    }
+
+    private void validateTaskOwnership(TaskEntity task) {
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new AccessDeniedException("You do not have permission to access this task");
+        }
+
+        boolean isManager = authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .anyMatch("ROLE_MANAGER"::equals);
+
+        if (isManager) {
+            return;
+        }
+
+        String currentUserEmail = authentication.getName();
+        String assigneeEmail = task.getAssignee() != null ? task.getAssignee().getEmail() : null;
+
+        if (assigneeEmail == null || !assigneeEmail.equals(currentUserEmail)) {
+            throw new AccessDeniedException("You can only update your own tasks");
+        }
     }
 }

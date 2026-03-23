@@ -271,11 +271,12 @@ Giao task cho một user
 **Logic**
 1. tìm task theo taskId, throw nếu không tồn tại
 2. tìm user theo assigneeId, throw nếu không tồn tại
-3. kiểm tra task status phải là TODO, throw nếu không hợp lệ
-4. kiểm tra task không bị quá hạn, throw nếu đã hết hạn
-5. kiểm tra user có thuộc project của task không, throw nếu không thuộc
-6. gán user cho task
-7. trả về TaskResponse
+3. kiểm tra user không ở trạng thái INACTIVE
+4. kiểm tra task status phải là TODO, throw nếu không hợp lệ
+5. kiểm tra task không bị quá hạn, throw nếu đã hết hạn
+6. kiểm tra user có thuộc project của task không, throw nếu không thuộc
+7. gán user cho task
+8. trả về TaskResponse
 
 **Test cases**
 - assign_success
@@ -284,6 +285,7 @@ Giao task cho một user
 - assign_taskNotTodo_throwException
 - assign_taskIsOverdue_throwException
 - assign_userNotInProject_throwException
+- assign_userInactive_throwException
 
 ### 9.startTask()
 
@@ -296,13 +298,17 @@ Bắt đầu thực hiện task
 **Logic**
 1. tìm task theo taskId, throw nếu không tồn tại
 2. kiểm tra task đã có assignee chưa, throw nếu chưa có
-3. gọi task.start() để chuyển trạng thái
-4. trả về TaskResponse
+3. kiểm tra quyền: MANAGER được phép, USER chỉ được thao tác task của chính mình
+4. gọi task.start() để chuyển trạng thái
+5. trả về TaskResponse
 
 **Test cases**
 - startTask_success
 - startTask_notFound_throwException
 - startTask_noAssignee_throwException
+- startTask_success_assigneeUser
+- startTask_success_manager
+- startTask_nonAssigneeUser_throwAccessDenied
 
 ### 10.completeTask()
 
@@ -315,13 +321,16 @@ Hoàn thành task
 **Logic**
 1. tìm task theo taskId, throw nếu không tồn tại
 2. kiểm tra task status phải là IN_PROGRESS, throw nếu không hợp lệ
-3. gọi task.complete() để chuyển trạng thái
-4. trả về TaskResponse
+3. kiểm tra quyền: MANAGER được phép, USER chỉ được thao tác task của chính mình
+4. gọi task.complete() để chuyển trạng thái
+5. trả về TaskResponse
 
 **Test cases**
-- completeTask_success
-- completeTask_notFound_throwException
-- completeTask_notInProgress_throwException
+- completeTask_success_assigneeUser
+- completeTask_success_manager
+- completeTask_taskNotFound_throwException
+- completeTask_taskNotInProgress_throwException
+- completeTask_nonAssigneeUser_throwAccessDenied
 
 ---
 
